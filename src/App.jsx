@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import LoginPage from './pages/login/login'
+import RegisterPage from './pages/register/register'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-      <LoginPage/>
+      <RegisterPage/>
     </>
   )
 }
