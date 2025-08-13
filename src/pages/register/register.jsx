@@ -10,36 +10,32 @@ export default function RegisterPage() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
-        async function handleSubmit(e) {
-            e.preventDefault();
-            setError(null);
-            setSuccess(null);
-            if (password !== confirmPassword) {
-                setError("As senhas não coincidem.");
-                return;
-            }
-            setLoading(true);
-            try {
-                await axios.post(`${API_BASE_URL}/auth/register`, {
-                    username: login,
-                    password,
-                });
-                setSuccess("Cadastro realizado com sucesso!");
-                setLogin("");
-                setPassword("");
-                setConfirmPassword("");
-            } catch (err) {
-                setError(
-                    err.response?.data?.message || err.message || "Erro ao cadastrar usuário"
-                );
-            } finally {
-                setLoading(false);
-            }
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setError(null);
+        setSuccess(null);
+        if (password !== confirmPassword) {
+            setError("As senhas não coincidem.");
+            return;
         }
+        try {
+            await axios.post(`${API_BASE_URL}/auth/register`, {
+                username: login,
+                password,
+            });
+            setSuccess("Cadastro realizado com sucesso!");
+            setLogin("");
+            setPassword("");
+            setConfirmPassword("");
+        } catch (err) {
+            setError(
+                err.response?.data?.message || err.message || "Erro ao cadastrar usuário"
+            );
+        }
+    }
 
     return (
         <div className={styles.body}>
@@ -106,9 +102,9 @@ export default function RegisterPage() {
                 </div>
                 {error && <div className={styles.error}>{error}</div>}
                 {success && <div className={styles.success}>{success}</div>}
-                <button type="submit" className={styles.submitBtn} disabled={loading}>
-                    {loading ? "Salvando..." : "Salvar"}
-                </button>
+                        <button type="submit" className={styles.submitBtn}>
+                            Salvar
+                        </button>
             </form>
         </div>
     );

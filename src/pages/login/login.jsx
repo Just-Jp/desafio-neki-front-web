@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import styles from "./login.module.css";
 import API_BASE_URL from "../../api/api";
 import { Eye, EyeSlash } from "phosphor-react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [remember, setRemember] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const saved = localStorage.getItem("auth_saved");
@@ -34,21 +36,22 @@ export default function LoginPage() {
     async function handleSubmit(e) {
         e.preventDefault();
         setError(null);
-        setLoading(true);
         try {
-            const res = await fetch(`${API_BASE_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: login, password }),
+            const res = await axios.post(`${API_BASE_URL}/auth/login`, {
+                username: login,
+                password,
             });
-            if (!res.ok) throw new Error("Email ou Senha Invalidos");
-            const data = await res.json().catch(() => ({}));
-            if (data.token) localStorage.setItem("token", data.token);
-            window.location.href = "/";
+            const data = res.data;
+            if (data.token && data.userId) {
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("username", login);
+                localStorage.setItem("userId", data.userId);
+                navigate("/home");
+            }
         } catch (err) {
-            setError(err.message || "Erro ao efetuar login");
-        } finally {
-            setLoading(false);
+            setError(
+                err.response?.data?.message || err.message || "Erro ao efetuar login"
+            );
         }
     }
 
@@ -105,20 +108,20 @@ export default function LoginPage() {
                         />
                         <p>Lembrar-se</p>
                     </div>
-                    <button
-                        type="button"
-                        className={styles.registerButton}
-                        onClick={() => (window.location.href = "/register")}
-                    >
-                        Cadastrar-se
-                    </button>
+                        <button
+                            type="button"
+                            className={styles.registerButton}
+                            onClick={() => navigate("/register")}
+                        >
+                            Cadastrar-se
+                        </button>
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}
 
-                <button type="submit" className={styles.submitBtn} disabled={loading}>
-                    {loading ? "Entrando..." : "Entrar"}
-                </button>
+                        <button type="submit" className={styles.submitBtn}>
+                            Entrar
+                        </button>
 
             </form>
         </div>

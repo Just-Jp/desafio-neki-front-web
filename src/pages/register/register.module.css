@@ -133,6 +133,7 @@
 }
 
 .success {
+    color: #008000;
     padding-bottom: 1rem;
     font-family: "Poppins", sans-serif;
     font-size: bold;
